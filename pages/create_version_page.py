@@ -8,6 +8,7 @@ from datetime import datetime
 
 from selenium.webdriver.common.by import By
 from selenium.webdriver.support.select import Select
+from selenium.webdriver.support.ui import WebDriverWait
 
 from pages.base_page import MozTrapBasePage
 
@@ -21,6 +22,7 @@ class MozTrapCreateVersionPage(MozTrapBasePage):
     _submit_locator = (By.CSS_SELECTOR, '#productversion-add-form .form-actions > button')
     _version_manage_locator = (By.CSS_SELECTOR, '#manageproductversions .listitem .title[title="%(product_name)s %(version_name)s"]')
     _version_homepage_locator = (By.CSS_SELECTOR, '.runsdrill .runsfinder .productversions .colcontent .title[title="%(version_name)s"][data-product="%(product_name)s"])')
+    _success_message_locator = (By.CSS_SELECTOR, '#messages .message.success')
 
     def go_to_create_version_page(self):
         self.selenium.get(self.base_url + '/manage/productversion/add/')
@@ -39,6 +41,10 @@ class MozTrapCreateVersionPage(MozTrapBasePage):
         product_select.select_by_visible_text(product_name)
 
         self.selenium.find_element(*self._submit_locator).click()
+
+        WebDriverWait(self.selenium, self.timeout).until(
+            lambda s: self.is_element_present(*self._success_message_locator)
+        )
 
         return version
 
